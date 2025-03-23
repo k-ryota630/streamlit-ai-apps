@@ -103,19 +103,49 @@ def init_chain():
     output_parser = StrOutputParser()
     return prompt | st.session_state.llm | output_parser
 
-
 def get_message_counts(text):
-    # モデル名を小文字にして判定
-    model_lower = st.session_state.model_name.lower()
-    if "gemini" in model_lower:
-        return st.session_state.llm.get_num_tokens(text)
-    else:
-        # Claude 3.7 Sonnet はトークナイザー非公開なので、tiktoken を利用
-        if "gpt" in st.session_state.model_name or "grok" in st.session_state.model_name:
-            encoding = tiktoken.encoding_for_model(st.session_state.model_name)
+    """
+    現在のモデルに基づいて適切な方法でテキスト中のトークン数をカウントします。
+    トークン数を整数で返します。
+    """
+    try:
+        model_name = st.session_state.model_name.lower()
+        
+        # Geminiモデルの場合、内蔵のトークンカウンターを使用
+        if "gemini" in model_name:
+            return st.session_state.llm.get_num_tokens(text)
+        
+        # その他のモデルの場合、tiktoken を適切なエンコーディングで使用
+        encoding_name = "cl100k_base"  # 新しいモデル用のデフォルト
+        
+        if "gpt" in model_name or "o1" in model_name:
+            # OpenAIモデルの場合
+            try:
+                encoding = tiktoken.encoding_for_model(model_name)
+            except KeyError:
+                encoding = tiktoken.get_encoding(encoding_name)
+        elif "grok" in model_name:
+            # Grokは cl100k_base エンコーディングを使用
+            encoding = tiktoken.get_encoding(encoding_name)
         else:
-            encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")  # 仮のエンコーディング
-        return len(encoding.encode(text))
+            # Claudeなどはデフォルトで cl100k_base を使用
+            encoding = tiktoken.get_encoding(encoding_name)
+            
+        # テキストの型に応じたトークンカウント
+        if isinstance(text, str):
+            return len(encoding.encode(text))
+        elif isinstance(text, list):
+            count = 0
+            for item in text:
+                if isinstance(item, dict) and "content" in item:
+                    count += len(encoding.encode(item["content"]))
+                elif isinstance(item, str):
+                    count += len(encoding.encode(item))
+            return count
+        return 0
+    except Exception as e:
+        st.warning(f"Token counting error: {e}")
+        return 0  # エラー発生時は0を返し、アプリケーションのクラッシュを防止
 
 def get_message_counts(message):
     # ... (省略) ...
