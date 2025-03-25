@@ -104,24 +104,7 @@ def init_chain():
     return prompt | st.session_state.llm | output_parser
 
 
-def get_message_counts(text):
-    # モデル名を小文字にして判定
-    model_lower = st.session_state.model_name.lower()
-    if "gemini" in model_lower:
-        return st.session_state.llm.get_num_tokens(text)
-    else:
-        # Claude 3.7 Sonnet はトークナイザー非公開なので、tiktoken を利用
-        if "gpt" in st.session_state.model_name or "grok" in st.session_state.model_name:
-            encoding = tiktoken.encoding_for_model(st.session_state.model_name)
-        else:
-            encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")  # 仮のエンコーディング
-        return len(encoding.encode(text))
-
 def get_message_counts(message):
-    # ... (省略) ...
-    # モデル名を取得 (st.session_state.model_name に grok-2-latest が設定されていることを前提)
-    # model_name = st.session_state.model_name  # ← この行は不要になる可能性があります
-
     # エンコーディングを明示的に指定 (cl100k_base を例として使用)
     encoding = tiktoken.get_encoding("cl100k_base")  # または適切なエンコーディング名
 
@@ -133,7 +116,6 @@ def get_message_counts(message):
             if isinstance(item, dict) and "content" in item:
                 token_count += len(encoding.encode(item["content"]))
     return token_count
-
 
 
 def calc_and_display_costs():
