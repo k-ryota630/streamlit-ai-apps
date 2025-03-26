@@ -31,7 +31,7 @@ def main():
     # ChatGPTに質問を与えて回答を取り出す(パースする)処理を作成 (1.-4.の処理)
     # 1. ChatGPTのモデルを呼び出すように設定
     #    (デフォルトではGPT-3.5 Turboが呼ばれる)
-    llm = ChatOpenAI(model_name="o3-mini", temperature=2.0, max_tokens=1000)
+    llm = ChatOpenAI(model_name="gpt-o3-mini", temperature=2.0, max_tokens=1000)
 
     # 2. ユーザーの質問を受け取り、ChatGPTに渡すためのテンプレートを作成
     #    テンプレートには過去のチャット履歴を含めるように設定
