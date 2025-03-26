@@ -1,5 +1,4 @@
 import os
-import tiktoken
 import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -24,23 +23,6 @@ except ImportError:
     import warnings
     warnings.warn("dotenv not found. Please make sure to set your environment variables manually.", ImportWarning)
 ################################################
-
-# 各モデルのトークン単価（仮の値）
-MODEL_PRICES = {
-    "input": {
-        "o1": 0.5 / 1_000_000,
-        "gemini-2.0-flash": 3.5 / 1_000_000,
-        "grok-2-latest": 0.7 / 1_000_000,
-        "claude-3-7-sonnet-latest": 3 / 1_000_000
-    },
-    "output": {
-        "o1": 1.5 / 1_000_000,
-        "gemini-2.0-flash": 10.5 / 1_000_000,
-        "grok-2-latest": 2.0 / 1_000_000,
-        "claude-3-7-sonnet-latest": 15 / 1_000_000
-    }
-}
-
 
 def init_page():
     st.set_page_config(
@@ -103,49 +85,6 @@ def init_chain():
     output_parser = StrOutputParser()
     return prompt | st.session_state.llm | output_parser
 
-
-def get_message_counts(message):
-    # エンコーディングを明示的に指定 (cl100k_base を例として使用)
-    encoding = tiktoken.get_encoding("cl100k_base")  # または適切なエンコーディング名
-
-    token_count = 0
-    if isinstance(message, str):
-        token_count = len(encoding.encode(message))
-    elif isinstance(message, list):
-        for item in message:
-            if isinstance(item, dict) and "content" in item:
-                token_count += len(encoding.encode(item["content"]))
-    return token_count
-
-
-def calc_and_display_costs():
-    output_count = 0
-    input_count = 0
-    for role, message in st.session_state.message_history:
-        token_count = get_message_counts(message)
-        if role == "ai":
-            output_count += token_count
-        else:
-            input_count += token_count
-
-    # 初期状態（System Message のみ）の場合は API コールなし
-    if len(st.session_state.message_history) == 1:
-        return
-
-    input_cost = MODEL_PRICES['input'][st.session_state.model_name] * input_count
-    output_cost = MODEL_PRICES['output'][st.session_state.model_name] * output_count
-    if "gemini" in st.session_state.model_name.lower() and (input_count + output_count) > 128000:
-        input_cost *= 2
-        output_cost *= 2
-
-    cost = output_cost + input_cost
-
-    st.sidebar.markdown("## Costs")
-    st.sidebar.markdown(f"**Total cost: ${cost:.5f}**")
-    st.sidebar.markdown(f"- Input cost: ${input_cost:.5f}")
-    st.sidebar.markdown(f"- Output cost: ${output_cost:.5f}")
-
-
 def main():
     init_page()
     init_messages()
@@ -166,9 +105,6 @@ def main():
         # チャット履歴に追加
         st.session_state.message_history.append(("user", user_input))
         st.session_state.message_history.append(("ai", response))
-
-    # コストの計算と表示
-    calc_and_display_costs()
 
 
 if __name__ == '__main__':
