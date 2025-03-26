@@ -24,7 +24,7 @@ pytube==15.0.0
 
 # chapter 7
 PyMuPDF==1.23.25
-faiss-cpu==1.7.4
+faiss-cpu==1.10.0
 
 # chapter 8
 langsmith==0.1.54
