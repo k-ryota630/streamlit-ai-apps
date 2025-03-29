@@ -11,6 +11,7 @@ langchain-core==0.1.46
 langchain-google-genai==1.0.3
 langchain-anthropic==0.1.11
 python-dotenv==1.0.0
+langchain-xai==0.2.1
 
 ## chapter 5
 # Webサイト要約アプリ用
