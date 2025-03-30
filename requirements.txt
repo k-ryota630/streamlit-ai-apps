@@ -5,8 +5,8 @@ tiktoken==0.7.0
 streamlit==1.33.0
 langchain==0.1.16
 langchain-community==0.0.34
-langchain-openai==0.3.6  # 0.1.3から0.3.6に更新
-langchain-core==0.3.35  # 0.1.46から0.3.35に更新（langchain-xaiの要件を満たす）
+langchain-openai==0.3.6
+langchain-core==0.1.42
 langchain-google-genai==1.0.3
 langchain-anthropic==0.1.11
 python-dotenv==1.0.0
