@@ -37,7 +37,3 @@ duckduckgo_search==4.2
 
 # XML processing
 lxml==5.2.1
-
-# File type detection - this can be problematic on some platforms
-python-magic-bin==0.4.14; platform_system=="Windows"
-python-magic==0.4.27; platform_system!="Windows"
