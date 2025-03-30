@@ -13,7 +13,7 @@ if not api_key:
 genai.configure(api_key=api_key)
 
 # Gemini モデルの設定
-MODEL_ID = "gemini-1.5-pro"  # 利用可能なモデル名に変更
+MODEL_ID = "gemini-1.5-pro"  # 利用可能なモデル名
 generation_config = {
     "temperature": 0.7,
     "top_p": 0.95,
@@ -41,8 +41,8 @@ safety_settings = [
 ]
 
 # Streamlitページ設定
-st.set_page_config(page_title="Gemini Chatbot", page_icon="🤗")
-st.header("Gemini Chatbot 🤗")
+st.set_page_config(page_title="Gemini 2.5 Chatbot", page_icon="🤗")
+st.header("Gemini 2.5 Chatbot 🤗")
 
 # チャット履歴初期化
 if "messages" not in st.session_state:
@@ -64,34 +64,34 @@ if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
     
-    # Geminiモデルの準備
-    model = genai.GenerativeModel(
-        model_name=MODEL_ID,
-        generation_config=generation_config,
-        safety_settings=safety_settings
-    )
-    
-    # チャット履歴を適切な形式に変換
-    chat_history = []
-    for msg in st.session_state.messages:
-        chat_history.append({"role": msg["role"], "parts": [msg["content"]]})
-    
-    # チャットセッションを開始
-    chat = model.start_chat(history=chat_history)
-    
-    # システムプロンプトをコンテキストとして追加
-    context_with_prompt = f"{system_prompt}\n\n{user_input}"
-    
-    # AIの応答を取得
-    with st.spinner("Geminiが考え中..."):
-        try:
-            response = chat.send_message(context_with_prompt)
+    try:
+        # Geminiモデルの準備
+        model = genai.GenerativeModel(
+            model_name=MODEL_ID,
+            generation_config=generation_config,
+            safety_settings=safety_settings
+        )
+        
+        # チャット履歴を適切な形式に変換
+        chat_history = []
+        for msg in st.session_state.messages:
+            role = "user" if msg["role"] == "user" else "model"
+            chat_history.append({"role": role, "parts": [msg["content"]]})
+        
+        # チャットセッションを開始
+        chat = model.start_chat(history=chat_history)
+        
+        # AIの応答を取得
+        with st.spinner("Geminiが考え中..."):
+            response = chat.send_message(user_input)
             response_text = response.text
             
             # AIの応答をチャット履歴と画面に追加
-            st.session_state.messages.append({"role": "model", "content": response_text})
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
             with st.chat_message("assistant"):
                 st.markdown(response_text)
-        except Exception as e:
-            st.error(f"エラーが発生しました: {str(e)}")
-
+    except Exception as e:
+        st.error(f"エラーが発生しました: {str(e)}")
+        st.info("詳細なデバッグ情報を表示するには、以下のコードをオンにしてください")
+        if st.checkbox("デバッグ情報を表示"):
+            st.exception(e)
