@@ -1,36 +1,17 @@
-# main.py
 import streamlit as st
-import os # 環境変数を読み込むために必要
+import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.exceptions import LangChainException
-# google.api_core.exceptions もインポートしておくと、より具体的なエラーハンドリングが可能
-# from google.api_core.exceptions import PermissionDenied, Unauthenticated
-
-###### dotenv を利用するのはローカル開発時のみ ######
-# Streamlit Cloud では Secrets を使用するため、dotenv は必須ではない
-# ローカルで .env ファイルを使いたい場合は、この部分を残す
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-    # print("Loaded .env file (running locally)") # ローカル実行確認用
-except ImportError:
-    # dotenv がインストールされていない、または不要な環境 (Streamlit Cloudなど)
-    # print("dotenv not found or not needed, skipping.")
-    pass
-################################################
-
 
 def main():
     st.set_page_config(
-        page_title="Gemini Chat on Streamlit Cloud", # ページタイトル変更
-        page_icon="☁️" # ページアイコン変更
+        page_title="Gemini 2.5 Pro Chat",
+        page_icon="☁️"
     )
-    st.header("Gemini Chat on Streamlit Cloud ☁️") # ヘッダー変更
-
-    # --- Streamlit Cloud Secrets または 環境変数からAPIキーを取得 ---
-    # Streamlit Cloud の Secrets で設定した GOOGLE_API_KEY が環境変数として読み込まれる
+    st.header("Gemini 2.5 Pro Chat ☁️") 
+    
     google_api_key = os.getenv("GOOGLE_API_KEY")
 
     # APIキーが設定されていない場合のエラー表示と処理停止
