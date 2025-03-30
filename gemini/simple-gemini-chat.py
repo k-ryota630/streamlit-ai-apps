@@ -49,7 +49,7 @@ def main():
     try:
         # LLMモデルをGeminiに設定
         # APIキーは環境変数 GOOGLE_API_KEY から自動的に読み込まれる
-        llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0, convert_system_message_to_human=True)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro-exp-03-25", temperature=0, convert_system_message_to_human=True)
 
         # プロンプトテンプレートの作成
         prompt = ChatPromptTemplate.from_messages([
