@@ -18,10 +18,10 @@ google-generativeai==0.5.2
 tiktoken==0.7.0
 
 # LangChain packages
-langchain==0.1.16
+langchain
 langchain-community>=0.0.32,<0.1
 langchain-openai==0.3.6
-langchain-core==0.1.42  # このバージョンを維持
+langchain-core
 langchain-google-genai==1.0.3
 langchain-anthropic==0.1.11
 langchain-xai==0.2.1
