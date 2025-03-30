@@ -12,7 +12,7 @@ google-cloud-bigquery==3.21.0
 db-dtypes==1.2.0
 
 # LLM API packages
-openai==1.29.0
+openai
 anthropic==0.25.7
 google-generativeai==0.5.2
 tiktoken==0.7.0
