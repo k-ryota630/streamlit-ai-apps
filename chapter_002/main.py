@@ -1,4 +1,3 @@
-# Github: https://github.com/naotaka1128/llm_app_codes/chapter02/main.py
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -13,55 +12,54 @@ except ImportError:
     warnings.warn("dotenv not found. Please make sure to set your environment variables manually.", ImportWarning)
 ################################################
 
-
 def main():
     st.set_page_config(
-        page_title="ランダム度が高い ChatGPT o3-mini",
+        page_title="My Great ChatGPT o3-mini",
         page_icon="🤗"
     )
-    st.header("ランダム度が高い ChatGPT o3-mini 🤗")
+    st.header("My Great ChatGPT o3-mini 🤗")
 
-    # チャット履歴の初期化: message_history がなければ作成
+    # チャット履歴の初期化
     if "message_history" not in st.session_state:
         st.session_state.message_history = [
-            # System Prompt を設定 ('system' はSystem Promptを意味する)
-            ("system", "You are a helpful assistant.")
+            {"role": "system", "content": "You are a helpful assistant."}
         ]
 
-    # ChatGPTに質問を与えて回答を取り出す(パースする)処理を作成 (1.-4.の処理)
-    # 1. ChatGPTのモデルを呼び出すように設定
-    #    (デフォルトではGPT-3.5 Turboが呼ばれる)
-    llm = ChatOpenAI(model_name="gpt-o3-mini", temperature=2.0, max_tokens=1000)
+    # LLMの設定
+    try:
+        llm = ChatOpenAI(
+            model_name="o3-mini-2025-01-31",
+            temperature=1.0,
+            max_tokens=1000
+        )
 
-    # 2. ユーザーの質問を受け取り、ChatGPTに渡すためのテンプレートを作成
-    #    テンプレートには過去のチャット履歴を含めるように設定
-    prompt = ChatPromptTemplate.from_messages([
-        *st.session_state.message_history,
-        ("user", "{user_input}")  # ここにあとでユーザーの入力が入る
-    ])
+        # プロンプトテンプレートの作成
+        prompt = ChatPromptTemplate.from_messages([
+            *st.session_state.message_history,
+            {"role": "user", "content": "{user_input}"}
+        ])
 
-    # 3. ChatGPTの返答をパースするための処理を呼び出し
-    output_parser = StrOutputParser()
+        # 出力パーサーの作成
+        output_parser = StrOutputParser()
 
-    # 4. ユーザーの質問をChatGPTに渡し、返答を取り出す連続的な処理(chain)を作成
-    #    各要素を | (パイプ) でつなげて連続的な処理を作成するのがLCELの特徴
-    chain = prompt | llm | output_parser
+        # チェーンの作成
+        chain = prompt | llm | output_parser
 
-    # ユーザーの入力を監視
-    if user_input := st.chat_input("聞きたいことを入力してね！"):
-        with st.spinner("ChatGPT is typing ..."):
-            response = chain.invoke({"user_input": user_input})
+        # ユーザーの入力を監視
+        if user_input := st.chat_input("聞きたいことを入力してね！"):
+            with st.spinner("ChatGPT is typing ..."):
+                response = chain.invoke({"user_input": user_input})
 
-        # ユーザーの質問を履歴に追加 ('user' はユーザーの質問を意味する)
-        st.session_state.message_history.append(("user", user_input))
+            # 履歴に追加
+            st.session_state.message_history.append({"role": "user", "content": user_input})
+            st.session_state.message_history.append({"role": "assistant", "content": response})
 
-        # ChatGPTの回答を履歴に追加 ('assistant' はChatGPTの回答を意味する)
-        st.session_state.message_history.append(("ai", response))
+        # チャット履歴の表示
+        for message in st.session_state.message_history:
+            st.chat_message(message["role"]).markdown(message["content"])
 
-    # チャット履歴の表示
-    for role, message in st.session_state.get("message_history", []):
-        st.chat_message(role).markdown(message)
-
+    except Exception as e:
+        st.error(f"エラーが発生しました: {str(e)}")
 
 if __name__ == '__main__':
     main()
