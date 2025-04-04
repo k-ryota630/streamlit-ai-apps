@@ -66,7 +66,6 @@ def main():
 
     except Exception as e:
         st.error(f"初期化中にエラーが発生しました: {str(e)}")
-        st.info("OPENAI_API_KEYが正しく設定されているか確認してください。")
 
 if __name__ == "__main__":
     main()
