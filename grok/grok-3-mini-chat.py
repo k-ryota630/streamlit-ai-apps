@@ -72,7 +72,7 @@ def main():
                     elif msg["role"] == "assistant":
                         langchain_messages.append(AIMessage(content=msg["content"]))
 
-                # --- grok2-LLMの呼び出し
+                # --- grok3-mini-LLMの呼び出し
                 response = model.invoke(langchain_messages)
 
                 if isinstance(response, AIMessage):
