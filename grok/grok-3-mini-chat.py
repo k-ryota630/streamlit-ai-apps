@@ -60,7 +60,7 @@ def main():
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        with st.spinner("Grok2 is thinking..."):
+        with st.spinner("Grok3 mini is thinking..."):
             try:
                 langchain_messages = []
                 # システムプロンプトをメッセージリストの先頭に追加
