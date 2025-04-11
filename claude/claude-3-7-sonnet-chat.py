@@ -11,7 +11,7 @@ except ImportError:
 api_key = os.getenv("ANTHROPIC_API_KEY")
 if not api_key:
     if not api_key:
-        st.error("ANTHROPIC_API_KEYが設定されていません。Streamlit Cloudの設定か、ローカルの環境変数を確認してください。")
+        st.error("ANTHROPIC_API_KEYが設定されていません。Streamlit Cloudの設定を確認してください。")
         st.stop()
 
 @st.cache_resource 
@@ -60,7 +60,7 @@ def main():
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        with st.spinner("Claude3.7 soonet is thinking..."):
+        with st.spinner("Claude3.7 sonnet is thinking..."):
             try:
                 langchain_messages = []
                 # システムプロンプトをメッセージリストの先頭に追加
@@ -72,7 +72,7 @@ def main():
                     elif msg["role"] == "assistant":
                         langchain_messages.append(AIMessage(content=msg["content"]))
 
-                # --- grok2-LLMの呼び出し
+                # --- claude 3.7 sonnet-LLMの呼び出し
                 response = model.invoke(langchain_messages)
 
                 if isinstance(response, AIMessage):
