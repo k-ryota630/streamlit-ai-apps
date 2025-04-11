@@ -18,7 +18,7 @@ if not api_key:
 def initialize_model(temperature, api_key):
     try:
         model = ChatXAI(
-            model_name="grok-3-mini-beta",
+            model_name="grok-3-mini-fast-beta",
             temperature=temperature,
             api_key=api_key
         )
