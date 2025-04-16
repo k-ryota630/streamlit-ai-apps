@@ -30,20 +30,6 @@ styles = {
         "background-color": "rgba(255, 255, 255, 0.35)",
     },
 }
-
-# # --- ロゴを使う場合（任意） ---
-# # スクリプトファイルからの相対パスでロゴファイルへのパスを取得
-# # 'your_logo.png' がスクリプトと同じディレクトリにあると仮定
-# script_dir = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
-# logo_path = os.path.join(script_dir, 'your_logo.png') # ロゴファイルが存在するか確認
-
-# ナビゲーションバーのオプション（任意）
-options = {
-    "show_menu": False, # Streamlitのデフォルトメニューを隠すか
-    "show_sidebar": False, # Streamlitのデフォルトサイドバーを隠すか
-    # "logo_path": logo_path, # ロゴファイルを使う場合はコメント解除
-    # "logo_width": 25, # ロゴの幅
-    # "use_padding": False, # カスタムスタイルでパディングを調整する場合はFalseに
 }
 
 # --- Streamlit Cloud での注意点 ---
