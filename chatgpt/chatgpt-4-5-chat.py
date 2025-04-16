@@ -18,7 +18,7 @@ if not api_key:
 def initialize_model(temperature, api_key):
     try:
         model = ChatOpenAI(
-            model_name="gpt-4.5-preview-2025-02-27",
+            model_name="gpt-4.1-2025-04-14",
             temperature=temperature,
             api_key=api_key
         )
@@ -29,8 +29,8 @@ def initialize_model(temperature, api_key):
         st.stop()
 
 def main():
-    st.set_page_config(page_title="My Great ChatGPT 4.5", page_icon="🤗")
-    st.header("My Great ChatGPT 4.5 🤗")
+    st.set_page_config(page_title="My Great ChatGPT 4.1", page_icon="🤗")
+    st.header("My Great ChatGPT 4.1 🤗")
 
     # --- サイドバーの設定項目 ---
     temperature = st.sidebar.slider(
@@ -58,7 +58,7 @@ def main():
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        with st.spinner("ChatGPT 4.5 is thinking..."):
+        with st.spinner("ChatGPT 4.1 is thinking..."):
             try:
                 langchain_messages = []
                 # システムプロンプトをメッセージリストの先頭に追加
@@ -70,7 +70,7 @@ def main():
                     elif msg["role"] == "assistant":
                         langchain_messages.append(AIMessage(content=msg["content"]))
 
-                # --- ChatGPT 4.5 LLMの呼び出し
+                # --- ChatGPT 4.1 LLMの呼び出し
                 response = model.invoke(langchain_messages)
 
                 if isinstance(response, AIMessage):
