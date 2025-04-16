@@ -23,8 +23,8 @@ def select_model():
         max_value=1.0,
         value=0.7,
         step=0.01,
-        help="値が大きいとランダムに、小さいと真面目になります。"
     )
+    st.sidebar.help("値が大きいとランダムに、小さいと真面目になります。")
 
     available_models = {
         "ChatGPT 4.1": "gpt-4.1-2025-04-14",
@@ -36,8 +36,8 @@ def select_model():
         "Choose a model:",
         list(available_models.keys()),
         index=0,
-        help="OpenAI、Google、XAI、Anthropicの最新モデルから選べます。"
     )
+    st.sidebar.help("OpenAI、Google、XAI、Anthropicの最新モデルから選べます。")
 
     model_name = available_models[model_display_name]
     st.session_state.model_name = model_name
