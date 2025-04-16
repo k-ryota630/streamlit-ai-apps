@@ -17,7 +17,6 @@ anthropic_api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API
 xai_api_key = st.secrets.get("XAI_API_KEY", os.getenv("XAI_API_KEY"))
 
 def select_model():
-    st.sidebar.title("モデル設定")
 
     temperature = st.sidebar.slider(
         "Temperature:",
@@ -25,7 +24,7 @@ def select_model():
         max_value=1.0,
         value=0.7,
         step=0.01,
-        help="値が高いほど創造的でランダムな応答に、低いほど決定的で一貫性のある応答になります。"
+        help="値が大きいとランダムに、小さいと真面目になります。"
     )
 
     models = ("chatGPT 4.1", "Gemini 2.5 Pro", "grok-3 mini", "Claude 3.7 Sonnet")
@@ -33,6 +32,7 @@ def select_model():
         "Choose a model:",
         models,
         index=0
+        help="OpenAI、Google、xAI、Anthropicの最新モデルから選べます。"
     )
 
     model = None
@@ -79,14 +79,6 @@ def select_model():
                     temperature=temperature,
                     anthropic_api_key=anthropic_api_key
                 )
-
-        if error_message:
-            st.sidebar.error(error_message)
-            return None
-        else:
-            st.session_state.selected_model_display_name = model_choice
-            st.sidebar.success(f"モデル '{st.session_state.model_name}' を選択しました。")
-            return model
 
     except Exception as e:
         st.sidebar.error(f"モデルの初期化中にエラーが発生しました: {e}")
