@@ -3,6 +3,7 @@ anthropic
 google-generativeai
 tiktoken
 streamlit
+streamlit-navigation-bar
 langchain
 langchain-community
 langchain-openai
