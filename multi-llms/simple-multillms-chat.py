@@ -28,11 +28,11 @@ def select_model():
     )
 
     models = ("chatGPT 4.1", "Gemini 2.5 Pro", "grok-3 mini", "Claude 3.7 Sonnet")
+            help="OpenAI、Google、xAI、Anthropicの最新モデルから選べます。"
     model_choice = st.sidebar.radio(
         "Choose a model:",
         models,
         index=0
-        help="OpenAI、Google、xAI、Anthropicの最新モデルから選べます。"
     )
 
     model = None
