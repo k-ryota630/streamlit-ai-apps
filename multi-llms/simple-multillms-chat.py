@@ -8,7 +8,6 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_xai import ChatXAI
-
 import traceback
 
 openai_api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
@@ -16,8 +15,8 @@ google_api_key = st.secrets.get("GOOGLE_API_KEY", os.getenv("GOOGLE_API_KEY"))
 anthropic_api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
 xai_api_key = st.secrets.get("XAI_API_KEY", os.getenv("XAI_API_KEY"))
 
-def select_model():
 
+def select_model():
     temperature = st.sidebar.slider(
         "Temperature:",
         min_value=0.0,
@@ -27,68 +26,88 @@ def select_model():
         help="値が大きいとランダムに、小さいと真面目になります。"
     )
 
-    models = ("chatGPT 4.1", "Gemini 2.5 Pro", "grok-3 mini", "Claude 3.7 Sonnet")
-    model_choice = st.sidebar.radio(
+    available_models = {
+        "ChatGPT 4.1": "gpt-4.1-2025-04-14",
+        "Gemini 2.5 Pro": "gemini-2.5-pro-exp-03-25",
+        "Claude 3.7 Sonnet": "claude-3-7-sonnet-latest",
+        "Grok-3 Mini": "grok-3-mini-fast-beta"
+    }
+    model_display_name = st.sidebar.radio(
         "Choose a model:",
-        models,
-        index=0
+        list(available_models.keys()),
+        index=0,
+        help="OpenAI、Google、XAI、Anthropicの最新モデルから選べます。"
     )
+
+    model_name = available_models[model_display_name]
+    st.session_state.model_name = model_name
 
     model = None
     error_message = None
 
     try:
-        if model_choice == "chatGPT 4.1":
+        if model_display_name == "ChatGPT 4.1":
             if not openai_api_key:
-                error_message = "OpenAIのAPIキーが設定されていません。"
+                error_message = "OpenAI APIキーが設定されていません。"
             else:
-                st.session_state.model_name = "gpt-4.1-2025-04-14"
                 model = ChatOpenAI(
-                    model_name=st.session_state.model_name,
+                    model_name=model_name,
                     temperature=temperature,
                     api_key=openai_api_key
                 )
-        elif model_choice == "Gemini 2.5 Pro":
+        elif model_display_name == "Gemini 2.5 Pro":
             if not google_api_key:
-                error_message = "GoogleのAPIキーが設定されていません。"
+                error_message = "Google APIキーが設定されていません。"
             else:
-                st.session_state.model_name = "gemini-2.5-pro-exp-03-25"
                 model = ChatGoogleGenerativeAI(
-                    model=st.session_state.model_name,
+                    model=model_name,
                     temperature=temperature,
-                    google_api_key=google_api_key
+                    google_api_key=google_api_key,
+                    convert_system_message_to_human=True
                 )
-        elif model_choice == "grok-3 mini":
-            if not xai_api_key:
-                error_message = "XAIのAPIキーが設定されていません。"
-            else:
-                st.session_state.model_name = "grok-3-mini-fast-beta"
-                model = ChatXAI(
-                    model_name=st.session_state.model_name,
-                    temperature=temperature,
-                    api_key=xai_api_key
-                )
-        elif model_choice == "Claude 3.7 Sonnet":
+        elif model_display_name == "Grok-3 Mini":
+             if not xai_api_key:
+                 error_message = "XAI APIキーが設定されていません。"
+             else:
+                 model = ChatXAI(
+                     model_name=model_name,
+                     temperature=temperature,
+                     api_key=xai_api_key
+                 )
+        elif model_display_name == "Claude 3.7 Sonnet":
             if not anthropic_api_key:
-                error_message = "AnthropicのAPIキーが設定されていません。"
+                error_message = "Anthropic APIキーが設定されていません。"
             else:
-                st.session_state.model_name = "claude-3-7-sonnet-latest"
                 model = ChatAnthropic(
-                    model_name=st.session_state.model_name,
+                    model_name=model_name,
                     temperature=temperature,
                     anthropic_api_key=anthropic_api_key
                 )
 
     except Exception as e:
-        st.sidebar.error(f"モデルの初期化中にエラーが発生しました: {e}")
+        error_message = f"モデルの初期化中にエラーが発生しました: {e}"
+        st.sidebar.error(error_message)
         st.sidebar.error(traceback.format_exc())
-        return None
+        model = None
+
+    if error_message:
+        st.sidebar.error(error_message)
+
+    return model, error_message
 
 def main():
     st.set_page_config(page_title="My Great LLM's", page_icon="🤗")
     st.header("My Great LLM's 🤗")
 
-    model = select_model()
+    model, error_message = select_model()
+
+    if error_message:
+        st.error(f"モデルの準備ができませんでした: {error_message}")
+        st.warning("サイドバーで別のモデルを選択するか、APIキーの設定を確認してください。")
+        return
+    if model is None:
+        st.error("モデルオブジェクトが正常に作成されませんでした。原因不明のエラーです。")
+        return
 
     system_prompt = "You are a helpful assistant."
 
@@ -116,7 +135,7 @@ def main():
             elif msg["role"] == "assistant":
                 langchain_messages.append(AIMessage(content=msg["content"]))
 
-        with st.spinner("LLM is thinking..."):
+        with st.spinner(f"{st.session_state.model_name} is thinking..."):
             try:
                 response = model.invoke(langchain_messages)
 
@@ -126,7 +145,7 @@ def main():
                      response_text = response
                 else:
                     st.error(f"予期しない応答形式を受け取りました: {type(response)}")
-                    response_text = "エラー: 応答の解析に失敗しました。予期しない形式です。"
+                    response_text = f"エラー: 応答の解析に失敗しました。形式: {type(response)}"
                     st.error(f"応答内容: {response}")
 
                 st.session_state.messages.append({"role": "assistant", "content": response_text})
