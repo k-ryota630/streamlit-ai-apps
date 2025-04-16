@@ -9,7 +9,7 @@ pages = ["Home", "Documentation", "Examples", "Community", "About"]
 # 詳細はドキュメントを参照: https://github.com/gabrieltempass/streamlit-navigation-bar
 styles = {
     "nav": {
-        "background-color": "rgb(70, 70, 70)", # 背景色を濃い灰色に
+        "background-color": "rgb(170, 180, 194)", # 背景色を濃い灰色に
         "justify-content": "left", # 左寄せにする場合
     },
     "div": {
