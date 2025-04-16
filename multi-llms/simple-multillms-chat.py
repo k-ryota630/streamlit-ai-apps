@@ -99,10 +99,6 @@ def main():
 
     model = select_model()
 
-    if model is None:
-        st.warning("サイドバーでモデルを選択し、必要なAPIキーが設定されているか確認してください。")
-        st.stop()
-
     system_prompt = "You are a helpful assistant."
 
     if "messages" not in st.session_state:
